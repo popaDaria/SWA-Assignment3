@@ -132,7 +132,7 @@ export default function Board() {
     const message: string = useAppSelector((state: RootState) => state.play.message);
     const [playStarted, setPlayStarted] = useState<boolean>(false);
     const dispatch = useAppDispatch();
-    let [games, setGames] = useState<GameData[]>([]);
+    const [games, setGames] = useState<GameData[]>([]);
 
     const continueGame = (id: number) => {
         setPlayStarted(true);
