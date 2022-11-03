@@ -15,7 +15,7 @@ export default function Scores() {
         <div>
             <div>
                 Top 10 Scores:
-                {games.filter((game) => game.completed).sort((game) => game.score).map((game) => (
+                {games.filter((game) => game.completed).sort((a, b) => b.score - a.score).map((game) => (
                     <div key={game.id}>Game {game.id} - Score: {game.score}</div>
                 ))}
             </div>
