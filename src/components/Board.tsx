@@ -6,16 +6,18 @@ import { useAppSelector, useAppDispatch } from '../app/hooks';
 import { RootState } from '../app/store';
 import {
     setSelectedPiece,
-    setBoard,
     setMessage,
     setMatches,
     setInitialSetup,
     clearMatches,
-    increaseScore,
     setCalculatingMove,
+} from '../slices/playSlice';
+import {
+    setBoard,
+    increaseScore,
     decreaseMoves,
     endGame
-} from '../slices/playSlice';
+} from '../slices/gameSlice'
 import './Board.css';
 
 class RandomGenerator implements Generator<string> {
@@ -45,14 +47,14 @@ export function BoardRowElement({ rowIndex, colIndex, element }: ElementProps) {
 
     const dispatch = useAppDispatch();
     const firstSelected: BoardModel.Position | undefined = useAppSelector((state: RootState) => state.play.selectedPiece);
-    const board: BoardModel.Board<string> | undefined = useAppSelector((state: RootState) => state.play.board);
+    const board: BoardModel.Board<string> | undefined = useAppSelector((state: RootState) => state.game.board);
     const matches: BoardModel.Position[] = useAppSelector((state: RootState) => state.play.matches);
     const calculatingMove: boolean = useAppSelector((state: RootState) => state.play.calculatingMove);
-    const completed: boolean = useAppSelector((state: RootState) => state.play.completed);
+    const completed: boolean = useAppSelector((state: RootState) => state.game.completed);
 
-    const score: number = useAppSelector((state: RootState) => state.play.score);
-    const moves: number = useAppSelector((state: RootState) => state.play.nrOfMoves);
-    const targetScore: number = useAppSelector((state: RootState) => state.play.targetScore);
+    const score: number = useAppSelector((state: RootState) => state.game.score);
+    const moves: number = useAppSelector((state: RootState) => state.game.nrOfMoves);
+    const targetScore: number = useAppSelector((state: RootState) => state.game.targetScore);
 
     const generator: Generator<string> = new RandomGenerator('A,B,C,D');
     const [selected, setSelected] = useState<boolean>(false);
@@ -131,16 +133,16 @@ export function BoardRow({ rowIndex, row }: Props) {
     );
 }
 
-export function Board() {
+export default function Board() {
 
     const generator: Generator<string> = new RandomGenerator('A,B,C,D');
-    let board: BoardModel.Board<string> = useAppSelector((state: RootState) => state.play.board) ?? BoardModel.create(generator, 5, 5);
+    let board: BoardModel.Board<string> = useAppSelector((state: RootState) => state.game.board) ?? BoardModel.create(generator, 5, 5);
     const initialSetup: boolean = useAppSelector((state: RootState) => state.play.initialSetup);
     const message: string = useAppSelector((state: RootState) => state.play.message);
-    const score: number = useAppSelector((state: RootState) => state.play.score);
-    const moves: number = useAppSelector((state: RootState) => state.play.nrOfMoves);
-    const targetScore: number = useAppSelector((state: RootState) => state.play.targetScore);
-    const completed: boolean = useAppSelector((state: RootState) => state.play.completed);
+    const score: number = useAppSelector((state: RootState) => state.game.score);
+    const moves: number = useAppSelector((state: RootState) => state.game.nrOfMoves);
+    const targetScore: number = useAppSelector((state: RootState) => state.game.targetScore);
+    const completed: boolean = useAppSelector((state: RootState) => state.game.completed);
     const dispatch = useAppDispatch();
 
     if (BoardModel.getMatches(board).length !== 0 && initialSetup) {
