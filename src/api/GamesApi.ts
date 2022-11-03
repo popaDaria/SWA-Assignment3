@@ -17,7 +17,7 @@ export async function updateGame(token: string, id: number, gameData: GameData) 
         console.log(response.statusText)
         return;
     }
-    console.log(response)
+    //console.log(response)
 }
 
 export async function getAllGames(token: string) {

@@ -20,7 +20,7 @@ import {
     GameData
 } from '../slices/gameSlice'
 import './Board.css';
-import { getAllGames, getGameById, updateGame } from '../api/GamesApi';
+import { getAllGames, getGameById, startNewGame, updateGame } from '../api/GamesApi';
 
 export class RandomGenerator implements Generator<string> {
     private values: string[];
@@ -139,6 +139,11 @@ export default function Board() {
         getGameById('0d6085eec7f2b14d24527f64552a02a1', id).then((result) => { dispatch(setGameData(result)) })
     }
 
+    const startAnotherGame = () => {
+        setPlayStarted(true);
+        startNewGame('0d6085eec7f2b14d24527f64552a02a1').then((result) => { dispatch(setGameData(result)) })
+    }
+
     useEffect(() => {
         if (!playStarted) {
             getAllGames('0d6085eec7f2b14d24527f64552a02a1').then((result) => setGames(result))
@@ -193,7 +198,7 @@ export default function Board() {
                         <button key={game.id} onClick={() => continueGame(game.id)}>Game {game.id}</button>
                     ))}
                     <div>
-                        <button onClick={() => setPlayStarted(true)}>New Game</button>
+                        <button onClick={() => startAnotherGame()}>New Game</button>
                     </div>
                 </div>
             )}
