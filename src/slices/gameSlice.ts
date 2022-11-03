@@ -1,20 +1,26 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { RandomGenerator } from "../components/Board";
 import { Board } from "../model/board";
+import * as BoardModel from '../model/board'
 
 export interface GameData {
     user: number;
     id: number;
-    board: Board<string> | undefined;
+    board: Board<string>;
     score: number;
     nrOfMoves: number;
     targetScore: number;
     completed: boolean;
 }
 
+const generator: RandomGenerator = new RandomGenerator('A,B,C,D');
+const initBoard = BoardModel.create(generator, 5, 5);
+BoardModel.handleMatches(BoardModel.getMatches(initBoard), initBoard, generator, [])
+
 const initialState: GameData = {
     user: 0,
     id: 0,
-    board: undefined,
+    board: initBoard,
     score: 0,
     nrOfMoves: 15,
     targetScore: 200,
@@ -26,7 +32,7 @@ export const gameSlice = createSlice({
     initialState,
     reducers: {
         setGameData: (state: GameData, action: PayloadAction<GameData>) => {
-            state = { ...action.payload };
+            state = { ...(action?.payload ? initialState : action.payload) };
             return state;
         },
         setBoard: (state: GameData, action: PayloadAction<Board<string> | undefined>) => {
@@ -45,6 +51,7 @@ export const gameSlice = createSlice({
 });
 
 export const {
+    setGameData,
     setBoard,
     increaseScore,
     decreaseMoves,

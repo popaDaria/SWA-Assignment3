@@ -1,3 +1,5 @@
+import { GameData } from "../slices/gameSlice";
+
 const myHeaders: Headers = new Headers();
 myHeaders.append("Content-Type", "application/json");
 
@@ -29,7 +31,7 @@ export async function getAllGames(token: string) {
         console.log(response.statusText)
         return;
     }
-    const game = await response.json()
+    const game: GameData[] = await response.json()
     return game
 }
 
@@ -52,7 +54,7 @@ export async function getGameById(token: string, id: number) {
         method: 'GET'
     };
 
-    const response = await fetch("http://localhost:9090/games?token=" + token + "&id=" + id, requestOptions)
+    const response = await fetch("http://localhost:9090/games/" + id + "?token=" + token, requestOptions)
     if (!response.ok) {
         console.log(response.statusText)
         return;

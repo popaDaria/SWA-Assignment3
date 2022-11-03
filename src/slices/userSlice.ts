@@ -26,6 +26,7 @@ export const userSlice = createSlice({
         },
         logout: (state: UserData) => {
             state = { ...initialState };
+            return state;
         }
     }
 });
