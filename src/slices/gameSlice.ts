@@ -23,7 +23,7 @@ const initialState: GameData = {
     board: initBoard,
     score: 0,
     nrOfMoves: 15,
-    targetScore: 200,
+    targetScore: 10,
     completed: false
 };
 

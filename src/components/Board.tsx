@@ -54,10 +54,6 @@ export function BoardRowElement({ rowIndex, colIndex, element }: ElementProps) {
     const calculatingMove: boolean = useAppSelector((state: RootState) => state.play.calculatingMove);
     const completed: boolean = useAppSelector((state: RootState) => state.game.completed);
 
-    const score: number = useAppSelector((state: RootState) => state.game.score);
-    const moves: number = useAppSelector((state: RootState) => state.game.nrOfMoves);
-    const targetScore: number = useAppSelector((state: RootState) => state.game.targetScore);
-
     const generator: Generator<string> = new RandomGenerator('A,B,C,D');
     const [selected, setSelected] = useState<boolean>(false);
 
@@ -98,11 +94,6 @@ export function BoardRowElement({ rowIndex, colIndex, element }: ElementProps) {
                         }
                     }
                     await timeout(1000)
-                    if (score >= targetScore || (moves === 0 && score < targetScore)) {
-                        if (!completed) {
-                            dispatch(endGame())
-                        }
-                    }
                 } else {
                     dispatch(setMessage("CAN'T MAKE MOVE"))
                     setTimeout(() => {
@@ -142,19 +133,10 @@ export default function Board() {
     const moves: number = useAppSelector((state: RootState) => state.game.nrOfMoves);
     const targetScore: number = useAppSelector((state: RootState) => state.game.targetScore);
     const completed: boolean = useAppSelector((state: RootState) => state.game.completed);
+    const calculatingMove: boolean = useAppSelector((state: RootState) => state.play.calculatingMove);
     const [playStarted, setPlayStarted] = useState<boolean>(false);
     const dispatch = useAppDispatch();
     let [games, setGames] = useState<GameData[]>([]);
-
-    /* if (!board) {
-       board = BoardModel.create(generator, 5, 5);
-        dispatch(setBoard(board))
-    }
-
-    if (BoardModel.getMatches(board).length !== 0) {
-        BoardModel.handleMatches(BoardModel.getMatches(board), board, generator, []) //handle initial matches
-        dispatch(setBoard(board))
-    } */
 
     useEffect(() => {
         if (!playStarted) {
@@ -166,6 +148,15 @@ export default function Board() {
         setPlayStarted(true);
         getGameById('0d6085eec7f2b14d24527f64552a02a1', id).then((result) => { dispatch(setGameData(result)) })
     }
+
+    useEffect(() => {
+        if (score >= targetScore || (moves === 0 && score < targetScore)) {
+            if (!completed) {
+                dispatch(endGame())
+            }
+        }
+    }, [score])
+
 
     return (
         <>
