@@ -1,5 +1,4 @@
-import React, { useState } from 'react';
-import logo from './logo.svg';
+import React from 'react';
 import './App.css';
 import Board from './components/Board';
 
@@ -10,6 +9,9 @@ import ProtectedRoute from './components/ProtectedRoute';
 import { useAppDispatch, useAppSelector } from './app/hooks';
 import { RootState } from './app/store';
 import { login, logout } from './slices/userSlice';
+import Scores from './components/Scores';
+import Profile from './components/Profile';
+import Login from './components/Login';
 
 function App() {
   const token = useAppSelector((state: RootState) => state.user.token);
@@ -18,7 +20,7 @@ function App() {
   const logIn = () => {
     dispatch(login({ username: 'asdasf', password: 'sdfsdf', token: 'smth' }))
   };
-  
+
   const logOut = () => {
     dispatch(logout())
   };
@@ -44,17 +46,11 @@ function App() {
             </nav>
           </div>
           <Routes>
-            <Route path="/login">
-              {/* <Profile /> */}
-            </Route>
+            <Route path="/login" element={<Login />} />
             <Route element={<ProtectedRoute />}>
-              <Route path="/scores">
-                {/* <Scores /> */}
-              </Route>
+              <Route path="/scores" element={<Scores />} />
               <Route path="/" element={<Board />} />
-              <Route path="/profile">
-                {/* <Profile /> */}
-              </Route>
+              <Route path="/profile" element={<Profile />} />
             </Route>
           </Routes>
         </BrowserRouter>
