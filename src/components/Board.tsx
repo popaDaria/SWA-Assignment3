@@ -20,7 +20,7 @@ import {
     GameData
 } from '../slices/gameSlice'
 import './Board.css';
-import { getAllGames, getGameById } from '../api/GamesApi';
+import { getAllGames, getGameById, updateGame } from '../api/GamesApi';
 
 export class RandomGenerator implements Generator<string> {
     private values: string[];
@@ -49,10 +49,9 @@ export function BoardRowElement({ rowIndex, colIndex, element }: ElementProps) {
 
     const dispatch = useAppDispatch();
     const firstSelected: BoardModel.Position | undefined = useAppSelector((state: RootState) => state.play.selectedPiece);
-    const board: BoardModel.Board<string> | undefined = useAppSelector((state: RootState) => state.game.board);
+    const game: GameData = useAppSelector((state: RootState) => state.game);
     const matches: BoardModel.Position[] = useAppSelector((state: RootState) => state.play.matches);
     const calculatingMove: boolean = useAppSelector((state: RootState) => state.play.calculatingMove);
-    const completed: boolean = useAppSelector((state: RootState) => state.game.completed);
 
     const generator: Generator<string> = new RandomGenerator('A,B,C,D');
     const [selected, setSelected] = useState<boolean>(false);
@@ -68,16 +67,16 @@ export function BoardRowElement({ rowIndex, colIndex, element }: ElementProps) {
     }
 
     const selectedElement = async () => {
-        if (!calculatingMove && !completed) {
+        if (!calculatingMove && !game.completed) {
             setSelected(true)
             if (firstSelected) {
                 dispatch(setCalculatingMove(true)) // block user for making other moves until we resolve this
-                const moveResults: BoardModel.MoveResult<string> = BoardModel.move(generator, { ...board }, firstSelected, { row: rowIndex, col: colIndex })
+                const moveResults: BoardModel.MoveResult<string> = BoardModel.move(generator, { ...game.board }, firstSelected, { row: rowIndex, col: colIndex })
                 if (moveResults.effects.length > 0) {
                     dispatch(decreaseMoves()) //made a valid move, decrease nr of moves left this game
-                    const newBoard: BoardModel.Board<string> = JSON.parse(JSON.stringify(board)) as typeof board;
+                    const newBoard: BoardModel.Board<string> = JSON.parse(JSON.stringify(game.board)) as typeof game.board;
                     newBoard.content[firstSelected.row][firstSelected.col] = BoardModel.piece(newBoard, { row: rowIndex, col: colIndex });
-                    newBoard.content[rowIndex][colIndex] = BoardModel.piece(board, firstSelected);
+                    newBoard.content[rowIndex][colIndex] = BoardModel.piece(game.board, firstSelected);
                     dispatch(setBoard(newBoard))
                     dispatch(setSelectedPiece(undefined))
                     setSelected(false)
@@ -93,6 +92,8 @@ export function BoardRowElement({ rowIndex, colIndex, element }: ElementProps) {
                             dispatch(clearMatches())
                         }
                     }
+                    //console.log(game)
+                    //updateGame('0d6085eec7f2b14d24527f64552a02a1', game.id, game)
                     await timeout(1000)
                 } else {
                     dispatch(setMessage("CAN'T MAKE MOVE"))
@@ -127,22 +128,11 @@ export function BoardRow({ rowIndex, row }: Props) {
 }
 
 export default function Board() {
-    let board: BoardModel.Board<string> = useAppSelector((state: RootState) => state.game.board);
+    const game: GameData = useAppSelector((state: RootState) => state.game);
     const message: string = useAppSelector((state: RootState) => state.play.message);
-    const score: number = useAppSelector((state: RootState) => state.game.score);
-    const moves: number = useAppSelector((state: RootState) => state.game.nrOfMoves);
-    const targetScore: number = useAppSelector((state: RootState) => state.game.targetScore);
-    const completed: boolean = useAppSelector((state: RootState) => state.game.completed);
-    const calculatingMove: boolean = useAppSelector((state: RootState) => state.play.calculatingMove);
     const [playStarted, setPlayStarted] = useState<boolean>(false);
     const dispatch = useAppDispatch();
     let [games, setGames] = useState<GameData[]>([]);
-
-    useEffect(() => {
-        if (!playStarted) {
-            getAllGames('0d6085eec7f2b14d24527f64552a02a1').then((result) => setGames(result))
-        }
-    }, [playStarted])
 
     const continueGame = (id: number) => {
         setPlayStarted(true);
@@ -150,28 +140,36 @@ export default function Board() {
     }
 
     useEffect(() => {
-        if (score >= targetScore || (moves === 0 && score < targetScore)) {
-            if (!completed) {
+        if (!playStarted) {
+            getAllGames('0d6085eec7f2b14d24527f64552a02a1').then((result) => setGames(result))
+        }
+    }, [playStarted])
+
+    useEffect(() => {
+        if (playStarted) {
+            if (game.score >= game.targetScore || (game.nrOfMoves === 0 && game.score < game.targetScore)) {
                 dispatch(endGame())
+                updateGame('0d6085eec7f2b14d24527f64552a02a1', game.id, { ...game, completed: true })
+            } else {
+                updateGame('0d6085eec7f2b14d24527f64552a02a1', game.id, game)
             }
         }
-    }, [score])
-
+    }, [game.board])
 
     return (
         <>
             {playStarted ? (
                 <>
-                    {!completed ? (
+                    {!game.completed ? (
                         <div className='play-info'>
                             <div className='play-target-score'>
-                                TARGET SCORE: {targetScore}
+                                TARGET SCORE: {game.targetScore}
                             </div>
                             <div className='play-score'>
-                                YOUR SCORE: {score}
+                                YOUR SCORE: {game.score}
                             </div>
                             <div className='play-moves'>
-                                MOVES LEFT: {moves}
+                                MOVES LEFT: {game.nrOfMoves}
                             </div>
                         </div>
                     ) : (
@@ -183,7 +181,7 @@ export default function Board() {
                         </div>
                     )}
                     <div className='board'>
-                        {board ? board.content ? board.content.map((row, rowIndex) => <BoardRow key={'row' + rowIndex} rowIndex={rowIndex} row={row} />) : null : null}
+                        {game.board ? game.board.content ? game.board.content.map((row, rowIndex) => <BoardRow key={'row' + rowIndex} rowIndex={rowIndex} row={row} />) : null : null}
                     </div>
                     <div className='play-message'>
                         {message}

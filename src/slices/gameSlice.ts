@@ -23,7 +23,7 @@ const initialState: GameData = {
     board: initBoard,
     score: 0,
     nrOfMoves: 15,
-    targetScore: 10,
+    targetScore: 200,
     completed: false
 };
 
@@ -32,7 +32,12 @@ export const gameSlice = createSlice({
     initialState,
     reducers: {
         setGameData: (state: GameData, action: PayloadAction<GameData>) => {
-            state = { ...(action?.payload ? initialState : action.payload) };
+            state = { ...state }
+            for (let keys in state) {
+                if (action.payload[keys] && state[keys] !== action.payload[keys]) {
+                    state[keys] = action.payload[keys];
+                }
+            }
             return state;
         },
         setBoard: (state: GameData, action: PayloadAction<Board<string> | undefined>) => {

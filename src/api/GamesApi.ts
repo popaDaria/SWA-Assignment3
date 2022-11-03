@@ -3,8 +3,8 @@ import { GameData } from "../slices/gameSlice";
 const myHeaders: Headers = new Headers();
 myHeaders.append("Content-Type", "application/json");
 
-export async function updateGame(token: string, id: number) {
-    var raw = JSON.stringify({ "user": 1, "id": 4, "score": 10, "completed": false });
+export async function updateGame(token: string, id: number, gameData: GameData) {
+    var raw = JSON.stringify(gameData);
 
     var requestOptions = {
         method: 'PATCH',
@@ -17,8 +17,7 @@ export async function updateGame(token: string, id: number) {
         console.log(response.statusText)
         return;
     }
-    const game = await response.json()
-    return game
+    console.log(response)
 }
 
 export async function getAllGames(token: string) {
