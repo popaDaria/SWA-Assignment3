@@ -177,6 +177,9 @@ export default function Board() {
                     ) : (
                         <div className='play-end'>
                             GAME OVER!
+                            <div>
+                                <button onClick={() => setPlayStarted(false)}>Back to main page</button>
+                            </div>
                         </div>
                     )}
                     <div className='board'>
