@@ -40,6 +40,12 @@ export const gameSlice = createSlice({
             }
             return state;
         },
+        initializeNewBoard: (state: GameData) => {
+            const initBoard = BoardModel.create(generator, 5, 5);
+            BoardModel.handleMatches(BoardModel.getMatches(initBoard), initBoard, generator, [])
+            state = { ...initialState, board: initBoard }
+            return state;
+        },
         setBoard: (state: GameData, action: PayloadAction<Board<string> | undefined>) => {
             state.board = { ...action.payload };
         },
@@ -52,8 +58,9 @@ export const gameSlice = createSlice({
         endGame: (state: GameData) => {
             state.completed = true;
         },
-        startGame: (state: GameData) => {
-            state.completed = false;
+        emptyGameData: (state: GameData) => {
+            state = { ...initialState };
+            return state;
         }
     }
 });
@@ -64,5 +71,6 @@ export const {
     increaseScore,
     decreaseMoves,
     endGame,
-    startGame} = gameSlice.actions;
+    emptyGameData,
+    initializeNewBoard } = gameSlice.actions;
 export default gameSlice.reducer;

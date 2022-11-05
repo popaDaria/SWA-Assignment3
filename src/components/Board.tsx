@@ -17,10 +17,11 @@ import {
     increaseScore,
     decreaseMoves,
     endGame,
-    GameData, startGame
+    GameData, emptyGameData, initializeNewBoard
 } from '../slices/gameSlice'
 import './Board.css';
 import { getAllGames, getGameById, startNewGame, updateGame } from '../api/GamesApi';
+import { UserData } from '../slices/userSlice';
 
 export class RandomGenerator implements Generator<string> {
     private values: string[];
@@ -52,6 +53,7 @@ export function BoardRowElement({ rowIndex, colIndex, element }: ElementProps) {
     const game: GameData = useAppSelector((state: RootState) => state.game);
     const matches: BoardModel.Position[] = useAppSelector((state: RootState) => state.play.matches);
     const calculatingMove: boolean = useAppSelector((state: RootState) => state.play.calculatingMove);
+    const token: string = useAppSelector((state: RootState) => state.user.token);
 
     const generator: Generator<string> = new RandomGenerator('A,B,C,D');
     const [selected, setSelected] = useState<boolean>(false);
@@ -92,8 +94,6 @@ export function BoardRowElement({ rowIndex, colIndex, element }: ElementProps) {
                             dispatch(clearMatches())
                         }
                     }
-                    //console.log(game)
-                    //updateGame('0d6085eec7f2b14d24527f64552a02a1', game.id, game)
                     await timeout(1000)
                 } else {
                     dispatch(setMessage("CAN'T MAKE MOVE"))
@@ -128,45 +128,57 @@ export function BoardRow({ rowIndex, row }: Props) {
 }
 
 export default function Board() {
-    const token = useAppSelector((state: RootState) => state.user.token);
+    const currentUser: UserData = useAppSelector((state: RootState) => state.user);
     const game: GameData = useAppSelector((state: RootState) => state.game);
     const message: string = useAppSelector((state: RootState) => state.play.message);
+    const calculatingMove: boolean = useAppSelector((state: RootState) => state.play.calculatingMove);
     const [playStarted, setPlayStarted] = useState<boolean>(false);
     const dispatch = useAppDispatch();
     const [games, setGames] = useState<GameData[]>([]);
 
     const continueGame = (id: number) => {
-        setPlayStarted(true);
-        getGameById(token, id).then((result) => { dispatch(setGameData(result)) })
+        setPlayStarted(false);
+        dispatch(emptyGameData());
+        getGameById(currentUser.token, id).then((result) => { dispatch(setGameData(result)) }).then(() => setPlayStarted(true))
     }
 
     const startAnotherGame = () => {
-        setPlayStarted(true);
-        dispatch(startGame())
-        startNewGame(token).then((result) => { dispatch(setGameData(result)) })
+        setPlayStarted(false);
+        dispatch(emptyGameData());
+        dispatch(initializeNewBoard());
+        startNewGame(currentUser.token)
+            .then((result) => { dispatch(setGameData(result)), updateGame(currentUser.token, result.id, { ...game, id: result.id, user: currentUser.userId }) })
+            .then(() => setPlayStarted(true));
+    }
+
+    const backToMain = () => {
+        setPlayStarted(false);
     }
 
     useEffect(() => {
         if (!playStarted) {
-            getAllGames(token).then((result) => setGames(result))
+            getAllGames(currentUser.token).then((result) => setGames(result))
         }
     }, [playStarted])
 
     useEffect(() => {
-        if (playStarted) {
+        if (!calculatingMove && playStarted) {
             if (game.score >= game.targetScore || (game.nrOfMoves === 0 && game.score < game.targetScore)) {
                 dispatch(endGame())
-                updateGame(token, game.id, { ...game, completed: true })
+                updateGame(currentUser.token, game.id, { ...game, completed: true })
             } else {
-                updateGame(token, game.id, game)
+                updateGame(currentUser.token, game.id, game)
             }
         }
-    }, [game.board])
+    }, [game.nrOfMoves, calculatingMove, game.board])
 
     return (
         <>
             {playStarted ? (
                 <>
+                    <div>
+                        {calculatingMove ? null : <button onClick={() => backToMain()}>Back to main page</button>}
+                    </div>
                     {!game.completed ? (
                         <div className='play-info'>
                             <div className='play-target-score'>
@@ -181,10 +193,8 @@ export default function Board() {
                         </div>
                     ) : (
                         <div className='play-end'>
-                            GAME OVER!
-                            <div>
-                                <button onClick={() => setPlayStarted(false)}>Back to main page</button>
-                            </div>
+                            {game.score >= game.targetScore ? (<div>Congrats! You won with a score of {game.score} and {game.nrOfMoves} moves left.</div>)
+                                : (<div>You were {(game.targetScore - game.score)} points away! Try again?</div>)}
                         </div>
                     )}
                     <div className='board'>
@@ -196,10 +206,12 @@ export default function Board() {
                 </>
             ) : (
                 <div>
-                    {games.filter((game) => !game.completed).map((game) => (
+                    <div>Continue your games:</div>
+                    {games.filter((game) => !game.completed && game.user === currentUser.userId).map((game) => (
                         <button key={game.id} onClick={() => continueGame(game.id)}>Game {game.id}</button>
                     ))}
                     <div>
+                        Start a new game:
                         <button onClick={() => startAnotherGame()}>New Game</button>
                     </div>
                 </div>

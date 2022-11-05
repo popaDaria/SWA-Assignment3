@@ -19,14 +19,14 @@ export default function Scores() {
     return (
         <div>
             <div>
-                Top 10 Scores:
-                {games.filter((game) => game.completed).sort((a, b) => b.score - a.score).splice(0,10).map((game) => (
-                    <div key={game.id}>Game {game.id} - Score: {game.score}</div>
+                <div>Top 10 Scores:</div>
+                {games.filter((game) => game.completed).sort((a, b) => b.score - a.score).splice(0, 10).map((game) => (
+                    <div key={game.id}>Game {game.id} - Score: {game.score} - Player {game.user}</div>
                 ))}
             </div>
             <div>
-                Your Top 3 Scores:
-                {games.filter((game) => game.completed && game.user === currentUserId).sort((a, b) => b.score - a.score).splice(0,3).map((game) => (
+                <div>Your Top 3 Scores:</div>
+                {games.filter((game) => game.completed && game.user === currentUserId).sort((a, b) => b.score - a.score).splice(0, 3).map((game) => (
                     <div key={game.id}>Game {game.id} - Score: {game.score}</div>
                 ))}
             </div>
