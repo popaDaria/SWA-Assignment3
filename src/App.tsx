@@ -8,21 +8,19 @@ import {
 import ProtectedRoute from './components/ProtectedRoute';
 import { useAppDispatch, useAppSelector } from './app/hooks';
 import { RootState } from './app/store';
-import { login, logout } from './slices/userSlice';
+import { logout } from './slices/userSlice';
 import Scores from './components/Scores';
 import Profile from './components/Profile';
 import Login from './components/Login';
+import Register from "./components/Register";
+import {logoutUser} from "./api/GamesApi";
 
 function App() {
   const token = useAppSelector((state: RootState) => state.user.token);
   const dispatch = useAppDispatch();
 
-  const logIn = () => {
-    dispatch(login({ username: 'asdasf', password: 'sdfsdf', token: 'smth' }))
-  };
-
   const logOut = () => {
-    dispatch(logout())
+    logoutUser(token).then(() => dispatch(logout()));
   };
 
   return (
@@ -40,13 +38,14 @@ function App() {
                     <Link to="/login" onClick={logOut}>Logout</Link>
                   </>
                 ) : (
-                  <Link to="/login" onClick={logIn}>Login</Link>
+                  <Link to="/login">Login</Link>
                 )}
               </div>
             </nav>
           </div>
           <Routes>
             <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />}/>
             <Route element={<ProtectedRoute />}>
               <Route path="/scores" element={<Scores />} />
               <Route path="/" element={<Board />} />

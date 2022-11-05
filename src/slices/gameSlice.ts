@@ -52,6 +52,9 @@ export const gameSlice = createSlice({
         endGame: (state: GameData) => {
             state.completed = true;
         },
+        startGame: (state: GameData) => {
+            state.completed = false;
+        }
     }
 });
 
@@ -60,5 +63,6 @@ export const {
     setBoard,
     increaseScore,
     decreaseMoves,
-    endGame } = gameSlice.actions;
+    endGame,
+    startGame} = gameSlice.actions;
 export default gameSlice.reducer;

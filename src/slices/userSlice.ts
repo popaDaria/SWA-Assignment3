@@ -4,7 +4,7 @@ export interface UserData {
     username: string;
     password: string;
     token?: string;
-    id?: number;
+    userId?: number;
     admin?: boolean;
 }
 
@@ -12,7 +12,7 @@ const initialState: UserData = {
     username: '',
     password: '',
     token: undefined,
-    id: 0,
+    userId: 0,
     admin: false
 };
 

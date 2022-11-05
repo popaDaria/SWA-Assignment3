@@ -17,7 +17,7 @@ import {
     increaseScore,
     decreaseMoves,
     endGame,
-    GameData
+    GameData, startGame
 } from '../slices/gameSlice'
 import './Board.css';
 import { getAllGames, getGameById, startNewGame, updateGame } from '../api/GamesApi';
@@ -128,6 +128,7 @@ export function BoardRow({ rowIndex, row }: Props) {
 }
 
 export default function Board() {
+    const token = useAppSelector((state: RootState) => state.user.token);
     const game: GameData = useAppSelector((state: RootState) => state.game);
     const message: string = useAppSelector((state: RootState) => state.play.message);
     const [playStarted, setPlayStarted] = useState<boolean>(false);
@@ -136,17 +137,18 @@ export default function Board() {
 
     const continueGame = (id: number) => {
         setPlayStarted(true);
-        getGameById('0d6085eec7f2b14d24527f64552a02a1', id).then((result) => { dispatch(setGameData(result)) })
+        getGameById(token, id).then((result) => { dispatch(setGameData(result)) })
     }
 
     const startAnotherGame = () => {
         setPlayStarted(true);
-        startNewGame('0d6085eec7f2b14d24527f64552a02a1').then((result) => { dispatch(setGameData(result)) })
+        dispatch(startGame())
+        startNewGame(token).then((result) => { dispatch(setGameData(result)) })
     }
 
     useEffect(() => {
         if (!playStarted) {
-            getAllGames('0d6085eec7f2b14d24527f64552a02a1').then((result) => setGames(result))
+            getAllGames(token).then((result) => setGames(result))
         }
     }, [playStarted])
 
@@ -154,9 +156,9 @@ export default function Board() {
         if (playStarted) {
             if (game.score >= game.targetScore || (game.nrOfMoves === 0 && game.score < game.targetScore)) {
                 dispatch(endGame())
-                updateGame('0d6085eec7f2b14d24527f64552a02a1', game.id, { ...game, completed: true })
+                updateGame(token, game.id, { ...game, completed: true })
             } else {
-                updateGame('0d6085eec7f2b14d24527f64552a02a1', game.id, game)
+                updateGame(token, game.id, game)
             }
         }
     }, [game.board])
