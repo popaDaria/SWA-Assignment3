@@ -38,20 +38,20 @@ export default function Login() {
         <div className='login-container'>
             <h1>Login</h1>
             <div className='login-form'>
-                <div className='login-form-row'>
+                <div className='login-form-row form-group mt-3'>
                     <label htmlFor='username'>Username</label>
-                    <input type='text' id='username' value={username} onChange={handleUsernameChange}/>
+                    <input type='text' id='username' value={username} onChange={handleUsernameChange} className='form-control'/>
                 </div>
-                <div className='login-form-row'>
+                <div className='login-form-row form-group mt-1'>
                     <label htmlFor='password'>Password</label>
-                    <input type='password' id='password' value={password} onChange={handlePasswordChange}/>
+                    <input type='password' id='password' value={password} onChange={handlePasswordChange} className='form-control'/>
                 </div>
-                <div className='login-form-row'>
-                    <button onClick={logIn}>Login</button>
+                <div className='login-form-row form-group'>
+                    <button className="btn btn-outline-success form-control mt-3" onClick={logIn}>Login</button>
                 </div>
-                <div className='login-form-row'>
+                <div className='login-form-row form-group mt-3'>
                     <label htmlFor='register'>Don't have an account?</label>
-                    <button id='register'><Link to='/register'>Register</Link></button>
+                    <Link id='register' to='/register' className="btn btn-outline-warning form-control mt-1">Register</Link>
                 </div>
                 <div className='login-form-row'>
                     <label>{message}</label>

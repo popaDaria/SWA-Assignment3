@@ -30,15 +30,15 @@ function App() {
           <div className="nav-body">
             <nav>
               <div className="navBar-ul">
-                <Link to="/">Play Game</Link>
-                <Link to="/scores">High Scores</Link>
+                <Link to="/" className='btn btn-outline-info'>Play Game</Link>
+                <Link to="/scores" className='btn btn-outline-info'>High Scores</Link>
                 {token ? (
                   <>
-                    <Link to="/profile">Profile</Link>
-                    <Link to="/login" onClick={logOut}>Logout</Link>
+                    <Link to="/profile" className='btn btn-outline-info'>Profile</Link>
+                    <Link to="/login" onClick={logOut} className='btn btn-outline-info'>Logout</Link>
                   </>
                 ) : (
-                  <Link to="/login">Login</Link>
+                  <Link to="/login" className='btn btn-outline-info'>Login</Link>
                 )}
               </div>
             </nav>

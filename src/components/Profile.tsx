@@ -1,8 +1,8 @@
-import {useState} from "react";
-import {useAppSelector} from "../app/hooks";
-import {RootState} from "../app/store";
-import {GameData} from "../slices/gameSlice";
-import {changePassword, getAllGames, getUser} from "../api/GamesApi";
+import { useState } from "react";
+import { useAppSelector } from "../app/hooks";
+import { RootState } from "../app/store";
+import { GameData } from "../slices/gameSlice";
+import { changePassword, getAllGames, getUser } from "../api/GamesApi";
 
 export default function Profile() {
     const user = useAppSelector((state: RootState) => state.user);
@@ -29,22 +29,22 @@ export default function Profile() {
 
 
     return (
-        <div>
-            <h1>Profile</h1>
-            <div>Username: {username}</div>
-            <div>
-                My Games:
-                {games.filter((game) => game.completed).sort((a, b) => a.id - b.id).map((game) => (
-                    <div key={game.id}>Game {game.id} - Score: {game.score} - Moves left: {game.nrOfMoves}</div>
-                ))}
-            </div>
-            <div className='login-form'>
-                <div className='login-form-row'>
+        <div className="mt-5">
+            <h1 className="mt-3">Profile</h1>
+            <h3>Username: <span style={{color: '#e83e8c'}}>{username}</span></h3>
+            <div className='login-form form-group mb-3'>
+                <div className='login-form-row form-group'>
                     <label htmlFor='password'>Change Password</label>
-                    <input type='password' id='password' value={password} onChange={handlePasswordChange}/>
+                    <input className="form-control" type='password' id='password' value={password} onChange={handlePasswordChange} />
+                    <button className="btn btn-outline-warning form-control mt-1" onClick={changePasswordAction}>Send</button>
                 </div>
-                <div className='login-form-row'>
-                    <button onClick={changePasswordAction}>Send</button>
+            </div>
+            <div>
+                <h4>My Games:</h4>
+                <div className='d-flex flex-row flex-wrap'>
+                    {games.filter((game) => game.completed).sort((a, b) => a.id - b.id).map((game) => (
+                        <div className='alert alert-info m-auto mb-2' key={game.id}>Game {game.id} - Score: {game.score} - Moves left: {game.nrOfMoves}</div>
+                    ))}
                 </div>
             </div>
         </div>

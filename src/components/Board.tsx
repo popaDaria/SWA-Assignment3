@@ -177,7 +177,7 @@ export default function Board() {
             {playStarted ? (
                 <>
                     <div>
-                        {calculatingMove ? null : <button onClick={() => backToMain()}>Back to main page</button>}
+                        {calculatingMove ? null : <button className='btn btn-warning' onClick={() => backToMain()}>Back to main page</button>}
                     </div>
                     {!game.completed ? (
                         <div className='play-info'>
@@ -206,13 +206,17 @@ export default function Board() {
                 </>
             ) : (
                 <div>
-                    <div>Continue your games:</div>
-                    {games.filter((game) => !game.completed && game.user === currentUser.userId).map((game) => (
-                        <button key={game.id} onClick={() => continueGame(game.id)}>Game {game.id}</button>
-                    ))}
+                    <h2>Continue your games:</h2>
+                    <div className='container'>
+                        <div className='row'>
+                            {games.filter((game) => !game.completed && game.user === currentUser.userId).map((game) => (
+                                <button className='btn btn-light btn-block col-4' key={game.id} onClick={() => continueGame(game.id)}>Game {game.id}</button>
+                            ))}
+                        </div>
+                    </div>
                     <div>
-                        Start a new game:
-                        <button onClick={() => startAnotherGame()}>New Game</button>
+                        <h2 className='mt-3'>Start a new game:</h2>
+                        <button className='btn btn-info' onClick={() => startAnotherGame()}>New Game</button>
                     </div>
                 </div>
             )}

@@ -17,17 +17,19 @@ export default function Scores() {
     }
 
     return (
-        <div>
-            <div>
-                <div>Top 10 Scores:</div>
-                {games.filter((game) => game.completed).sort((a, b) => b.score - a.score).splice(0, 10).map((game) => (
-                    <div key={game.id}>Game {game.id} - Score: {game.score} - Player {game.user}</div>
-                ))}
+        <div className='mt-5'>
+            <div className='mt-5'>
+                <h2>Top 10 Scores:</h2>
+                <div className='d-flex flex-row flex-wrap'>
+                    {games.filter((game) => game.completed).sort((a, b) => b.score - a.score).splice(0, 10).map((game) => (
+                        <div className='alert alert-info m-auto mb-2' key={game.id}>Player {game.user} - {game.score} points</div>
+                    ))}
+                </div>
             </div>
             <div>
-                <div>Your Top 3 Scores:</div>
+                <h2 className='mt-3'>Your Top 3 Scores:</h2>
                 {games.filter((game) => game.completed && game.user === currentUserId).sort((a, b) => b.score - a.score).splice(0, 3).map((game) => (
-                    <div key={game.id}>Game {game.id} - Score: {game.score}</div>
+                    <div className='alert alert-info' key={game.id}>Game {game.id} - Score: {game.score}</div>
                 ))}
             </div>
         </div>
