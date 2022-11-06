@@ -42,7 +42,7 @@ export default function Profile() {
             <div>
                 <h4>My Games:</h4>
                 <div className='d-flex flex-row flex-wrap'>
-                    {games.filter((game) => game.completed).sort((a, b) => a.id - b.id).map((game) => (
+                    {games.filter((game) => game.completed && game.user === user.userId).sort((a, b) => a.id - b.id).map((game) => (
                         <div className='alert alert-info m-auto mb-2' key={game.id}>Game {game.id} - Score: {game.score} - Moves left: {game.nrOfMoves}</div>
                     ))}
                 </div>
